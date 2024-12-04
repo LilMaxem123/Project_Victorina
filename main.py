@@ -18,7 +18,7 @@ GREEN = (100, 255, 100)
 GRAY = (200, 200, 200)
 SALMON = (250, 128, 114)
 LIGHT_GRAY = (220, 220, 220)
-LIGHT_BLUE = (135,206,250)
+
 font = pygame.font.Font(None, 40)
 text_font = pygame.font.Font(None, 60)
 sub_text_font = pygame.font.Font(None, 50)
@@ -30,6 +30,14 @@ hard_questions = [
     {"question": "Какой орган выделяет инсулин?", "answer": "поджелудочная железа"},
     {"question": "Как называется кислородное дыхание?", "answer": "аэробное"},
     {"question": "Сколько у здорового человека хромосом?", "answer": "47"},
+]
+
+lite_questions = [
+    {"question": "Какой запасной полисахарид у грибов?", "answer": "гликоген"},
+    {"question": "Что является ДНК-вирусом?", "answer": "грипп"},
+    {"question": "Какой орган выделяет инсулин?", "answer": "поджелудочная железа"},
+    {"question": "Как называется кислородное дыхание?", "answer": "аэробное"},
+    {"question": "Сколько у здорового человека хромосом", "answer": "46"},
 ]
 
 current_question = 0
@@ -90,7 +98,7 @@ def draw_congratulation():
 
 def draw_game_over():
     screen.fill(SALMON)
-    end_text = text_font.render("И вы называете себя Физтехом?!", True, BLACK)
+    end_text = text_font.render("И вы называете себя БМом?!", True, BLACK)
     end_text_rect = end_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     screen.blit(end_text, end_text_rect)
     end_sub_text = counter_font.render("Ваше количество очков: 4 - 1000", True, BLACK)
@@ -105,7 +113,7 @@ def draw_text(text, x, y, color=BLACK):
 
 def main_menu():
     global WIDTH, HEIGHT, screen
-    background_color = LIGHT_BLUE
+    background_color = WHITE
     button_color = BLUE
     user_name = ""
     input_active = False
@@ -130,10 +138,13 @@ def main_menu():
         screen.blit(input_surface, (input_rect.x + 5, input_rect.y + 5))
         input_rect.w = max(400, input_surface.get_width() + 10)
 
+        # lite_button_rect = pygame.Rect(WIDTH // 2 - 200, HEIGHT // 2, 150, 50)
         # hard_button_rect = pygame.Rect(WIDTH // 2 + 50, HEIGHT // 2, 150, 50)
 
+        lite_button_rect = pygame.Rect(WIDTH // 2 - 230, HEIGHT // 2, 150, 50)
         hard_button_rect = pygame.Rect(WIDTH // 2 + 120, HEIGHT // 2, 150, 50)
 
+        draw_button(lite_button_rect, "Lite", button_color, LIGHT_GRAY, lite_selected)
         draw_button(hard_button_rect, "Hard", button_color, LIGHT_GRAY, hard_selected)
 
         bg_color_button_rect = pygame.Rect(WIDTH // 2 - 280, HEIGHT // 2 + 100, 250, 50)
@@ -165,7 +176,12 @@ def main_menu():
                 else:
                     input_active = False
 
-                if hard_button_rect.collidepoint(event.pos):
+                if lite_button_rect.collidepoint(event.pos):
+                    selected_difficulty = "lite"
+                    lite_selected = True
+                    hard_selected = False
+
+                elif hard_button_rect.collidepoint(event.pos):
                     selected_difficulty = "hard"
                     hard_selected = True
                     lite_selected = False
@@ -208,6 +224,96 @@ def main_menu():
 
         pygame.display.flip()
         clock.tick(60)
+
+
+def lite_mode(background_color, button_color):
+    global WIDTH, HEIGHT, screen, score
+    running = True
+    escape_speed = 300
+    current_question = 0
+    button_positions = [
+        # (WIDTH // 2 - 400, HEIGHT // 2),
+        # (WIDTH // 2 + 200, HEIGHT // 2),
+        # (WIDTH // 2 - 400, HEIGHT // 2 + 200),
+        # (WIDTH // 2 + 200, HEIGHT // 2 + 200)
+
+        (WIDTH // 2 - 450, HEIGHT // 2),
+        (WIDTH // 2 + 80, HEIGHT // 2),
+        (WIDTH // 2 - 450, HEIGHT // 2 + 200),
+        (WIDTH // 2 + 80, HEIGHT // 2 + 200)
+    ]
+
+    buttons = [
+        pygame.Rect(pos[0], pos[1], BUTTON_WIDTH, BUTTON_HEIGHT)
+        for pos in button_positions
+    ]
+
+    while running:
+        screen.fill(background_color)
+
+        question_surface = font.render(lite_questions[current_question]["question"], True, BLACK)
+        question_rect = question_surface.get_rect(center=(WIDTH // 2, HEIGHT // 3))
+        screen.blit(question_surface, question_rect)
+
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        for i, button in enumerate(buttons):
+            if i == 0:
+                draw_button(button, lite_questions[current_question]["answer"], button_color, LIGHT_GRAY)
+            else:
+                draw_button(button, "Неправильный ответ", button_color, LIGHT_GRAY)
+
+        for button in buttons:
+            if current_question < len(lite_questions) - 1:
+                if button.collidepoint(mouse_x, mouse_y) and button != buttons[0]:
+                    button.x += random.randint(-escape_speed, escape_speed)
+                    button.y += random.randint(-escape_speed, escape_speed)
+                    button.x = max(0, min(WIDTH - BUTTON_WIDTH, button.x))
+                    button.y = max(0, min(HEIGHT - BUTTON_HEIGHT, button.y))
+            else:
+                if button.collidepoint(mouse_x, mouse_y) and button == buttons[0]:
+                    button.x += random.randint(-escape_speed, escape_speed)
+                    button.y += random.randint(-escape_speed, escape_speed)
+                    button.x = max(0, min(WIDTH - BUTTON_WIDTH, button.x))
+                    button.y = max(0, min(HEIGHT - BUTTON_HEIGHT, button.y))
+
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.VIDEORESIZE:
+                WIDTH, HEIGHT = event.w, event.h
+                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if buttons[0].collidepoint(event.pos) and current_question < len(lite_questions) - 1:
+                    score += 1
+                    current_question += 1
+                    if current_question == len(lite_questions):
+                        running = False
+                        draw_game_over()
+                        pygame.display.flip()
+                        pygame.time.wait(3000)
+                    else:
+                        random.shuffle(button_positions)
+                        for i, pos in enumerate(button_positions):
+                            buttons[i].topleft = pos
+                else:
+                    for i, button in enumerate(buttons):
+                        if button.collidepoint(event.pos) and i == 0:
+                            pass
+                        elif button.collidepoint(event.pos):
+                            current_question += 1
+                            score -= 9999
+                            if current_question == len(lite_questions):
+                                running = False
+                                draw_game_over()
+                                pygame.display.flip()
+                                pygame.time.wait(3000)
+
+        pygame.display.flip()
+
+    pygame.quit()
+    sys.exit()
 
 
 def hard_mode(background_color, button_color):
@@ -273,7 +379,9 @@ def main():
     print(f"Button Color: {button_color}")
     print(f"Selected Difficulty: {selected_difficulty}")
 
-    if selected_difficulty == "hard":
+    if selected_difficulty == "lite":
+        lite_mode(background_color, button_color)
+    elif selected_difficulty == "hard":
         hard_mode(background_color, button_color)
 
 
