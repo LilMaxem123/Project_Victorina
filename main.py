@@ -7,7 +7,7 @@ pygame.init()
 
 WIDTH, HEIGHT = 1200, 800
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-pygame.display.set_caption("кр по биологии")
+pygame.display.set_caption("Викторина")
 clock = pygame.time.Clock()
 
 WHITE = (255, 255, 255)
@@ -114,7 +114,7 @@ def draw_text(text, x, y, color=BLACK):
 
 def main_menu():
     global WIDTH, HEIGHT, screen
-    background_color = WHITE
+    background_color = LIGHT_BLUE
     button_color = BLUE
     user_name = ""
     input_active = False
