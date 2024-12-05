@@ -18,6 +18,7 @@ GREEN = (100, 255, 100)
 GRAY = (200, 200, 200)
 SALMON = (250, 128, 114)
 LIGHT_GRAY = (220, 220, 220)
+LIGHT_BLUE = (135, 206, 250)
 
 font = pygame.font.Font(None, 40)
 text_font = pygame.font.Font(None, 60)
@@ -33,11 +34,11 @@ hard_questions = [
 ]
 
 lite_questions = [
-    {"question": "Какой запасной полисахарид у грибов?", "answer": "гликоген"},
-    {"question": "Что является ДНК-вирусом?", "answer": "грипп"},
-    {"question": "Какой орган выделяет инсулин?", "answer": "поджелудочная железа"},
-    {"question": "Как называется кислородное дыхание?", "answer": "аэробное"},
-    {"question": "Сколько у здорового человека хромосом", "answer": "46"},
+    {"question": "Единица измерения энергии в СИ:", "answer": "Джоуль"},
+    {"question": "-lg[H+] =", "answer": "pH"},
+    {"question": "Мера инертности тела --", "answer": "масса"},
+    {"question": "Сила, с которой электромагнитное поле действует на заряженную частицу -", "answer": "Сила Лоренца"},
+    {"question": "По какой траектории движется тело, брошенное под углом к горизонту?", "answer": "Парабола"},
 ]
 
 current_question = 0
@@ -128,7 +129,7 @@ def main_menu():
     while True:
         screen.fill(background_color)
 
-        title_surface = text_font.render("кр по биологии", True, BLACK)
+        title_surface = text_font.render("Викторина", True, BLACK)
         title_rect = title_surface.get_rect(center=(WIDTH // 2, HEIGHT // 4))
         screen.blit(title_surface, title_rect)
 
